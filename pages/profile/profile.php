@@ -55,29 +55,35 @@ if ($row = $result->fetch_assoc()) {
                     <h2 class="section-title"><i class="ph ph-user text-primary" style="margin-right: 8px;"></i> Informasi Pribadi</h2>
                 </div>
                 
-                <div style="padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Nama Lengkap</div>
-                        <div style="font-weight: 600; color: var(--secondary);"><?= htmlspecialchars($user_name) ?></div>
+                <?php if(isset($_GET['success'])): ?>
+                    <div style="background: #22c55e; color: white; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center;">
+                        <?= htmlspecialchars($_GET['success']) ?>
                     </div>
-                    <button class="btn btn-outline" style="padding: 8px 16px;">Ubah</button>
-                </div>
+                <?php endif; ?>
+                <?php if(isset($_GET['error'])): ?>
+                    <div style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center;">
+                        <?= htmlspecialchars($_GET['error']) ?>
+                    </div>
+                <?php endif; ?>
 
-                <div style="padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Nomor Telepon</div>
-                        <div style="font-weight: 600; color: var(--secondary);"><?= htmlspecialchars($user_whatsapp) ?></div>
+                <form action="../../backend/profile/update_process.php" method="POST">
+                    <div style="padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Nama Lengkap</label>
+                        <input type="text" name="nama" value="<?= htmlspecialchars($user_name) ?>" class="form-control" required>
                     </div>
-                    <button class="btn btn-outline" style="padding: 8px 16px;">Ubah</button>
-                </div>
 
-                <div style="padding: 16px 0; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">Email</div>
-                        <div style="font-weight: 600; color: var(--secondary);"><?= htmlspecialchars($user_email) ?></div>
+                    <div style="padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Nomor Telepon</label>
+                        <input type="text" name="whatsapp" value="<?= htmlspecialchars($user_whatsapp) ?>" class="form-control" required>
                     </div>
-                    <button class="btn btn-outline" style="padding: 8px 16px;">Ubah</button>
-                </div>
+
+                    <div style="padding: 16px 0; display: flex; flex-direction: column; gap: 8px;">
+                        <label style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Email</label>
+                        <input type="email" name="email" value="<?= htmlspecialchars($user_email) ?>" class="form-control" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="margin-top: 16px; width: 100%;">Simpan Perubahan</button>
+                </form>
             </div>
 
             <div class="activity-card">
@@ -95,9 +101,15 @@ if ($row = $result->fetch_assoc()) {
                     <i class="ph ph-caret-right text-muted"></i>
                 </a>
 
-                <a href="../../backend/auth/logout.php" style="display: flex; align-items: center; padding: 16px 0; color: var(--danger); font-weight: 600; margin-top: 8px;">
-                    <i class="ph ph-sign-out" style="font-size: 20px; margin-right: 12px;"></i> Keluar Akun
+                <a href="../dashboard/index.php" style="display: flex; align-items: center; padding: 16px 0; color: var(--danger); font-weight: 600; margin-top: 8px;">
+                    <i class="ph ph-sign-out" style="font-size: 20px; margin-right: 12px;"></i> Keluar (Ke Dashboard)
                 </a>
+
+                <form action="../../backend/profile/delete_process.php" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini secara permanen? Data yang dihapus tidak bisa dikembalikan.');">
+                    <button type="submit" style="background: none; border: none; width: 100%; cursor: pointer; display: flex; align-items: center; padding: 16px 0; border-top: 1px solid var(--border); color: var(--danger); font-weight: 600; text-align: left;">
+                        <i class="ph ph-trash" style="font-size: 20px; margin-right: 12px;"></i> Hapus Akun Permanen
+                    </button>
+                </form>
             </div>
         </div>
     </div>

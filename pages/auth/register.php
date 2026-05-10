@@ -40,7 +40,7 @@ include_once '../../includes/header.php';
             </button>
             
             <p class="text-center mt-4 text-muted" style="text-align: center; margin-top: 24px;">
-                Sudah punya akun? <a href="login.php" class="text-primary font-bold">Masuk di sini</a>
+                Sudah punya akun? <a href="../dashboard/index.php" class="text-primary font-bold">Kembali ke Dashboard</a>
             </p>
         </form>
     </div>

@@ -1,9 +1,5 @@
 <?php
-// Pastikan session dimulai
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$is_logged_in = isset($_SESSION['user_id']);
+// Session login/logout ditiadakan
 ?>
 <!DOCTYPE html>
 <html lang="id">

@@ -41,6 +41,17 @@ if ($row = $result->fetch_assoc()) {
         <button class="btn btn-outline" style="padding: 12px 32px;">Voucher Saya</button>
     </div>
 
+    <?php if(isset($_GET['success'])): ?>
+        <div style="background: #22c55e; color: white; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center;">
+            <?= htmlspecialchars($_GET['success']) ?>
+        </div>
+    <?php endif; ?>
+    <?php if(isset($_GET['error'])): ?>
+        <div style="background: var(--danger); color: white; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center;">
+            <?= htmlspecialchars($_GET['error']) ?>
+        </div>
+    <?php endif; ?>
+
     <div class="grid-3">
         <?php
         $res_rewards = $conn->query("SELECT * FROM rewards");
@@ -65,7 +76,10 @@ if ($row = $result->fetch_assoc()) {
                 <div style="font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 16px;"><?= number_format($rw['poin_dibutuhkan']) ?> Pts</div>
                 
                 <?php if($is_enough_points): ?>
-                    <button class="btn btn-danger w-100" style="width: 100%;">Tukar <i class="ph ph-caret-right"></i></button>
+                    <form action="../../backend/rewards/redeem_process.php" method="POST" onsubmit="return confirm('Tukar poin dengan hadiah ini?');">
+                        <input type="hidden" name="reward_id" value="<?= $rw['id'] ?>">
+                        <button type="submit" class="btn btn-danger w-100" style="width: 100%;">Tukar <i class="ph ph-caret-right"></i></button>
+                    </form>
                 <?php else: ?>
                     <button class="btn btn-outline-danger w-100" style="width: 100%; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 99px; padding: 10px; cursor: not-allowed; font-weight: 600;" disabled>Poin Tidak Cukup</button>
                 <?php endif; ?>
