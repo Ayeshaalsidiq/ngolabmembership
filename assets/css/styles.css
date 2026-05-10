@@ -407,3 +407,537 @@ a {
     background-color: var(--background);
 }
 .form-control:focus { border-color: var(--primary); outline: none; background: white; }
+
+/* ================================================
+   TIER CARD LINK (Dashboard)
+   ================================================ */
+.tier-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: var(--radius-md);
+}
+.tier-card-link:hover {
+    transform: translateY(-3px);
+}
+.tier-card-link:hover .sidebar-card.dark {
+    box-shadow: 0 8px 32px rgba(92, 61, 46, 0.4);
+}
+
+/* ================================================
+   TIER MEMBERSHIP PAGE
+   ================================================ */
+.tier-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 24px;
+    transition: color 0.2s;
+}
+.tier-back-link:hover { color: var(--primary); }
+
+/* Hero Progress */
+.tier-hero {
+    background: var(--secondary);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-bottom: 40px;
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+.tier-hero-content {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+.tier-hero-badge {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.tier-hero-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.tier-hero-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+.tier-hero-points {
+    font-size: 15px;
+    color: var(--primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.tier-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.tier-progress-need {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.tier-progress-track {
+    height: 14px;
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.tier-progress-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 1s ease-out;
+    position: relative;
+}
+.tier-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+.tier-progress-markers {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+}
+.tier-max-badge {
+    background: rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    padding: 12px 20px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #c4b5fd;
+}
+
+/* Section Title */
+.tier-section-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.tier-section-title i { color: var(--primary); }
+
+/* Tier Comparison Cards */
+.tier-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+.tier-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--border);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+.tier-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+}
+.tier-card-active {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(249, 115, 22, 0.2);
+}
+.tier-card-active:hover {
+    box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3);
+}
+.tier-card-locked {
+    opacity: 0.7;
+}
+.tier-card-ribbon {
+    position: absolute;
+    top: 16px;
+    right: -30px;
+    background: var(--primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 36px;
+    transform: rotate(45deg);
+    letter-spacing: 0.5px;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+.tier-card-header {
+    padding: 32px 24px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+.tier-card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent);
+}
+.tier-card-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 16px;
+    backdrop-filter: blur(10px);
+}
+.tier-card-name {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    position: relative;
+}
+.tier-card-range {
+    font-size: 13px;
+    opacity: 0.85;
+    font-weight: 600;
+    position: relative;
+}
+.tier-card-body {
+    padding: 24px;
+}
+.tier-card-benefit-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.tier-card-benefit-title i { color: var(--primary); }
+.tier-benefit-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+}
+.tier-benefit-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-main);
+    line-height: 1.4;
+}
+.tier-benefit-list li i {
+    color: var(--success);
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.tier-card-status {
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.tier-card-status.active {
+    background: #f0fdf4;
+    color: var(--success);
+    border: 1px solid #bbf7d0;
+}
+.tier-card-status.passed {
+    background: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #bfdbfe;
+}
+.tier-card-status.locked {
+    background: var(--background);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+}
+
+/* Tips Section */
+.tier-tips-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 64px;
+}
+.tier-tips-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--secondary);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.tier-tips-title i { color: var(--primary); }
+.tier-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.tier-tip-item {
+    text-align: center;
+    padding: 24px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.tier-tip-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-sm);
+}
+.tier-tip-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 16px;
+}
+.tier-tip-item h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: 8px;
+}
+.tier-tip-item p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* ================================================
+   PROFILE PAGE - VIEW/EDIT MODE
+   ================================================ */
+.profile-alert {
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.profile-alert.success {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+.profile-alert.error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.profile-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--background);
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+.profile-role-badge.verified {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.profile-info-list {
+    padding-top: 8px;
+}
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+.profile-info-item:last-child { border-bottom: none; }
+.profile-info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+.profile-info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.profile-info-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.profile-info-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.verified-inline-badge {
+    font-size: 11px;
+    background: #f0fdf4;
+    color: #15803d;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ================================================
+   VERIFIKASI MAHASISWA SECTION
+   ================================================ */
+.verify-status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.verify-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+.verify-status.verified {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.ktm-upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+.ktm-upload-area:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+.ktm-preview-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.verify-card.verified-success {
+    border: 1px solid #bbf7d0;
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+}
+.verify-success-content {
+    text-align: center;
+    padding: 24px 0;
+}
+.verify-success-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-full);
+    background: #f0fdf4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #22c55e;
+    margin: 0 auto 16px;
+}
+.verify-success-content h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #15803d;
+    margin-bottom: 4px;
+}
+.verify-success-content p {
+    font-size: 14px;
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tier-cards-grid { grid-template-columns: 1fr; }
+    .tier-tips-grid { grid-template-columns: 1fr 1fr; }
+    .tier-hero-content { flex-direction: column; text-align: center; }
+    .tier-hero-points { justify-content: center; }
+    .dashboard-grid { grid-template-columns: 1fr !important; }
+}
+

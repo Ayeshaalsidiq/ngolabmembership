@@ -65,21 +65,23 @@ if ($row = $result->fetch_assoc()) {
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Tier Membership -->
-            <div class="sidebar-card dark">
-                <div class="card-header">Tier Membership</div>
-                <div class="tier-header">
-                    <span><?= $user_tier ?></span>
-                    <span class="text-primary"><?= isset($next_tier) ? $next_tier : '' ?></span>
+            <a href="../membership/tier.php" class="tier-card-link">
+                <div class="sidebar-card dark">
+                    <div class="card-header">Tier Membership <i class="ph ph-arrow-right" style="margin-left: auto; font-size: 18px; opacity: 0.7;"></i></div>
+                    <div class="tier-header">
+                        <span><?= $user_tier ?></span>
+                        <span class="text-primary"><?= isset($next_tier) ? $next_tier : '' ?></span>
+                    </div>
+                    <div class="progress-bg">
+                        <div class="progress-bar" style="width: <?= $progress_percent ?>%;"></div>
+                    </div>
+                    <?php if(isset($points_needed) && $points_needed > 0): ?>
+                        <div class="tier-desc">Kumpulkan <?= $points_needed ?> poin lagi untuk naik ke <?= $next_tier ?> Tier. <span style="text-decoration: underline; opacity: 0.9;">Lihat Detail →</span></div>
+                    <?php else: ?>
+                        <div class="tier-desc">Anda berada di tier tertinggi! <span style="text-decoration: underline; opacity: 0.9;">Lihat Detail →</span></div>
+                    <?php endif; ?>
                 </div>
-                <div class="progress-bg">
-                    <div class="progress-bar" style="width: <?= $progress_percent ?>%;"></div>
-                </div>
-                <?php if(isset($points_needed) && $points_needed > 0): ?>
-                    <div class="tier-desc">Kumpulkan <?= $points_needed ?> poin lagi untuk naik ke <?= $next_tier ?> Tier.</div>
-                <?php else: ?>
-                    <div class="tier-desc">Anda berada di tier tertinggi!</div>
-                <?php endif; ?>
-            </div>
+            </a>
         </div>
 
         <!-- Main Column -->

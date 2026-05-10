@@ -9,6 +9,10 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `poin` int(11) DEFAULT 0,
   `tier` varchar(20) DEFAULT 'Silver',
+  `role` varchar(20) DEFAULT 'Pengunjung',
+  `nim` varchar(30) DEFAULT NULL,
+  `ktm_path` varchar(255) DEFAULT NULL,
+  `is_verified` tinyint(1) DEFAULT 0,
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
