@@ -1,46 +1,61 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../../config/database.php';
+
+// Jika belum login, biarkan sebagai tamu (Guest)
+$is_logged_in = isset($_SESSION['user_id']);
+
 $page_title = 'Dashboard - Ngo+lab Membership';
 $active_page = 'dashboard';
 include_once '../../includes/header.php';
 
-// Ambil data user (Hardcode ID 1 untuk testing tanpa login)
-$user_id = 1;
+$user_id = $is_logged_in ? $_SESSION['user_id'] : 0;
 $user_name = "Pengunjung";
 $user_points = 0;
 $user_tier = "Silver";
-$progress_percent = 0;
+$user_role = "Pengunjung";
+$user_avatar = 'https://ui-avatars.com/api/?name=Guest&background=e2e8f0&color=475569';
 
-$stmt = $conn->prepare("SELECT nama, poin, tier FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+if ($is_logged_in) {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$result = $stmt->get_result();
-if ($row = $result->fetch_assoc()) {
-    $user_name = $row['nama'];
-    $user_points = $row['poin'];
-    $user_tier = $row['tier'];
-    
-    // Logika sederhana tier progress
-    if ($user_tier == 'Silver') {
-        $progress_percent = min(100, ($user_points / 500) * 100);
-        $next_tier = "Gold";
-        $points_needed = 500 - $user_points;
-    } else if ($user_tier == 'Gold') {
-        $progress_percent = min(100, (($user_points - 500) / 1000) * 100);
-        $next_tier = "Platinum";
-        $points_needed = 1500 - $user_points;
-    } else {
-        $progress_percent = 100;
-        $next_tier = "Max";
-        $points_needed = 0;
-    }
+$res = $stmt->get_result();
+if ($user = $res->fetch_assoc()) {
+    $user_name = $user['nama'];
+    $user_points = $user['poin'];
+    $user_tier = $user['tier'];
+    $user_role = $user['role'];
+    $user_avatar = !empty($user['foto_profile']) ? $user['foto_profile'] : 'https://ui-avatars.com/api/?name=' . urlencode($user_name) . '&background=f37021&color=fff';
+}
+
+// Logika tier progress
+$progress_percent = 0;
+$next_tier = "Gold";
+$points_needed = 0;
+
+if ($user_tier == 'Silver') {
+    $progress_percent = min(100, ($user_points / 500) * 100);
+    $next_tier = "Gold";
+    $points_needed = 500 - $user_points;
+} else if ($user_tier == 'Gold') {
+    $progress_percent = min(100, (($user_points - 500) / 1000) * 100);
+    $next_tier = "Platinum";
+    $points_needed = 1500 - $user_points;
+} else {
+    $progress_percent = 100;
+    $next_tier = "Platinum";
+    $points_needed = 0;
+}
 }
 ?>
 <div class="container">
     <!-- Hero Section -->
     <div class="dashboard-hero">
         <div class="hero-profile">
-            <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Profile">
+            <img src="<?= $user_avatar ?>" alt="Profile">
             <div>
                 <h1 class="hero-name">Halo, <?= htmlspecialchars($user_name) ?>!</h1>
                 <p class="hero-subtitle">Selamat datang di Ngolab Dashboard</p>

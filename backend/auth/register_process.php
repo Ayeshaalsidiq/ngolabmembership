@@ -30,7 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ssss", $nama, $whatsapp, $email, $hashed_password);
 
     if ($stmt->execute()) {
-        header("Location: ../../pages/auth/login.php?success=Registrasi berhasil! Silakan masuk.");
+        $_SESSION['user_id'] = $stmt->insert_id;
+        $_SESSION['user_nama'] = $nama;
+        header("Location: ../../pages/dashboard/index.php?success=Registrasi berhasil! Selamat datang.");
     } else {
         header("Location: ../../pages/auth/register.php?error=Terjadi kesalahan saat menyimpan data.");
     }

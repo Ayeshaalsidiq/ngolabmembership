@@ -1,8 +1,18 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../../config/database.php';
 
+// Pastikan user sudah login sebelum memproses pesanan
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../pages/menu/menu.php?error=Silakan login terlebih dahulu untuk memesan menu!");
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['menu_id'])) {
-    $user_id = 1;
+    // Ambil user_id dari sesi akun yang sedang login (bukan hardcode angka 1)
+    $user_id = $_SESSION['user_id'];
     $menu_id = intval($_POST['menu_id']);
 
     // Get menu details

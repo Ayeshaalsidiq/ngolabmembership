@@ -1,12 +1,21 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../../config/database.php';
+
+// Redirect ke registrasi jika belum punya akun
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/register.php");
+    exit;
+}
+
 $page_title = 'Profil - Ngo+lab Membership';
 $active_page = 'profile';
 include_once '../../includes/header.php';
 
-// Cek login ditiadakan sementara, gunakan user_id = 1
-$user_id = 1;
-$stmt = $conn->prepare("SELECT nama, whatsapp, email, tier, role, nim, ktm_path, is_verified FROM users WHERE id = ?");
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT nama, whatsapp, email, tier, role, nim, ktm_path, is_verified, foto_profile, poin FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -20,15 +29,11 @@ if ($row = $result->fetch_assoc()) {
     $user_nim = $row['nim'];
     $user_ktm = $row['ktm_path'];
     $user_verified = $row['is_verified'];
+    $user_points = $row['poin'];
+    $user_avatar = !empty($row['foto_profile']) ? $row['foto_profile'] : 'https://ui-avatars.com/api/?name=' . urlencode($user_name) . '&background=f37021&color=fff';
 } else {
-    $user_name = "User";
-    $user_whatsapp = "";
-    $user_email = "";
-    $user_tier = "Silver";
-    $user_role = "Pengunjung";
-    $user_nim = "";
-    $user_ktm = "";
-    $user_verified = 0;
+    header("Location: ../auth/login.php");
+    exit;
 }
 
 // Determine if we should show edit mode
@@ -462,6 +467,13 @@ $edit_mode = isset($_GET['mode']) && $_GET['mode'] === 'edit';
     }
 
     /* Responsive */
+    @media (max-width: 991px) {
+        .profile-grid {
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+        }
+    }
+
     @media (max-width: 768px) {
         .profile-container {
             padding: 1.5rem 1rem;
@@ -485,8 +497,13 @@ $edit_mode = isset($_GET['mode']) && $_GET['mode'] === 'edit';
             <!-- Profil Singkat -->
             <div class="profile-card" style="text-align: center;">
                 <div class="sidebar-profile-img">
-                    <img src="https://images.unsplash.com/photo-1531384441138-2736e62e0919?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Profile">
-                    <button class="cam-btn"><i class="ph-fill ph-camera"></i></button>
+                    <img src="<?= $user_avatar ?>" alt="Profile">
+                    <form action="../../backend/profile/update_avatar.php" method="POST" enctype="multipart/form-data" id="sidebarAvatarForm">
+                        <label for="sidebarAvatarInput" class="cam-btn">
+                            <i class="ph-fill ph-camera"></i>
+                        </label>
+                        <input type="file" name="avatar" id="sidebarAvatarInput" hidden onchange="document.getElementById('sidebarAvatarForm').submit()">
+                    </form>
                 </div>
                 
                 <h2 class="profile-name"><?= htmlspecialchars($user_name) ?></h2>
@@ -535,8 +552,8 @@ $edit_mode = isset($_GET['mode']) && $_GET['mode'] === 'edit';
                     <i class="ph ph-caret-right" style="color: #CBD5E1;"></i>
                 </a>
 
-                <a href="../dashboard/index.php" class="profile-link-item profile-link-danger">
-                    <div style="display: flex; align-items: center;"><i class="ph-fill ph-sign-out left-icon"></i> Keluar (Ke Dashboard)</div>
+                <a href="../../backend/auth/logout.php" class="profile-link-item profile-link-danger">
+                    <div style="display: flex; align-items: center;"><i class="ph-fill ph-sign-out left-icon"></i> Keluar Aplikasi</div>
                 </a>
 
                 <form action="../../backend/profile/delete_process.php" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus akun ini secara permanen? Data yang dihapus tidak bisa dikembalikan.');">

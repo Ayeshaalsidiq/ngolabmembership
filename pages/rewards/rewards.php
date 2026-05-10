@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../../config/database.php';
 $page_title = 'Rewards - Ngo+lab Membership';
 $active_page = 'rewards';
@@ -6,15 +9,20 @@ include_once '../../includes/header.php';
 
 $user_points = 0;
 $user_tier = "Silver";
-$user_id = 1;
 
-$stmt = $conn->prepare("SELECT poin, tier FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-if ($row = $result->fetch_assoc()) {
-    $user_points = $row['poin'];
-    $user_tier = $row['tier'];
+// Ambil ID user dari session (Dinamis, bukan hardcode)
+$is_logged_in = isset($_SESSION['user_id']);
+$user_id = $is_logged_in ? $_SESSION['user_id'] : 0;
+
+if ($is_logged_in) {
+    $stmt = $conn->prepare("SELECT poin, tier FROM users WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $user_points = $row['poin'];
+        $user_tier = $row['tier'];
+    }
 }
 ?>
 
@@ -75,13 +83,17 @@ if ($row = $result->fetch_assoc()) {
                 <div class="item-title" style="margin-bottom: 8px;"><?= htmlspecialchars($rw['nama_reward']) ?></div>
                 <div style="font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 16px;"><?= number_format($rw['poin_dibutuhkan']) ?> Pts</div>
                 
-                <?php if($is_enough_points): ?>
-                    <form action="../../backend/rewards/redeem_process.php" method="POST" onsubmit="return confirm('Tukar poin dengan hadiah ini?');">
-                        <input type="hidden" name="reward_id" value="<?= $rw['id'] ?>">
-                        <button type="submit" class="btn btn-danger w-100" style="width: 100%;">Tukar <i class="ph ph-caret-right"></i></button>
-                    </form>
+                <?php if($is_logged_in): ?>
+                    <?php if($is_enough_points): ?>
+                        <form action="../../backend/rewards/redeem_process.php" method="POST" onsubmit="return confirm('Tukar poin dengan hadiah ini?');">
+                            <input type="hidden" name="reward_id" value="<?= $rw['id'] ?>">
+                            <button type="submit" class="btn btn-danger w-100" style="width: 100%;">Tukar <i class="ph ph-caret-right"></i></button>
+                        </form>
+                    <?php else: ?>
+                        <button class="btn btn-outline-danger w-100" style="width: 100%; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 99px; padding: 10px; cursor: not-allowed; font-weight: 600;" disabled>Poin Tidak Cukup</button>
+                    <?php endif; ?>
                 <?php else: ?>
-                    <button class="btn btn-outline-danger w-100" style="width: 100%; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 99px; padding: 10px; cursor: not-allowed; font-weight: 600;" disabled>Poin Tidak Cukup</button>
+                    <a href="../auth/login.php" class="btn btn-primary w-100" style="width: 100%; display: block; padding: 10px;">Login untuk Tukar</a>
                 <?php endif; ?>
             </div>
         </div>

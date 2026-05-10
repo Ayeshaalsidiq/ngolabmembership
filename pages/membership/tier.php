@@ -1,22 +1,30 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../../config/database.php';
 $page_title = 'Tier Membership - Ngo+lab Membership';
 $active_page = 'membership';
 include_once '../../includes/header.php';
 
-// Ambil data user
-$user_id = 1;
+// Ambil data user dari session secara dinamis
+$is_logged_in = isset($_SESSION['user_id']);
+$user_id = $is_logged_in ? $_SESSION['user_id'] : 0;
+
 $user_points = 0;
 $user_tier = 'Silver';
+$user_name = 'Guest';
 
-$stmt = $conn->prepare("SELECT nama, poin, tier FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-if ($row = $result->fetch_assoc()) {
-    $user_name = $row['nama'];
-    $user_points = $row['poin'];
-    $user_tier = $row['tier'];
+if ($is_logged_in) {
+    $stmt = $conn->prepare("SELECT nama, poin, tier FROM users WHERE id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($row = $result->fetch_assoc()) {
+        $user_name = $row['nama'];
+        $user_points = $row['poin'];
+        $user_tier = $row['tier'];
+    }
 }
 
 // Definisi tier
@@ -68,7 +76,7 @@ $tiers = [
     ]
 ];
 
-// Hitung progress
+// Hitung progress berdasarkan tier user saat ini
 if ($user_tier == 'Silver') {
     $current_tier_idx = 0;
     $progress_percent = min(100, ($user_points / 500) * 100);
@@ -87,383 +95,42 @@ if ($user_tier == 'Silver') {
 }
 ?>
 
-<style>
-    /* Tema Visual Ngo+lab (Berdasarkan Gambar Desain) */
-    :root {
-        --ngolab-brown: #5A3E31;
-        --ngolab-orange: #F37021;
-        --ngolab-bg: #F4F6F9;
-        --ngolab-text: #333333;
-        --ngolab-text-light: #666666;
-        --border-radius-xl: 20px;
-        --border-radius-lg: 16px;
-    }
-
-    body {
-        background-color: var(--ngolab-bg);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        color: var(--ngolab-text);
-    }
-
-    .tier-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem;
-    }
-
-    .tier-back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--ngolab-text-light);
-        text-decoration: none;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        transition: color 0.2s;
-    }
-    .tier-back-link:hover {
-        color: var(--ngolab-orange);
-    }
-
-    /* Hero Section (Banner Cokelat) */
-    .tier-hero {
-        background-color: var(--ngolab-brown);
-        border-radius: var(--border-radius-xl);
-        padding: 2.5rem;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        box-shadow: 0 10px 30px rgba(90, 62, 49, 0.15);
-    }
-
-    .tier-hero-content {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .tier-hero-badge {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        border: 4px solid rgba(255,255,255,0.2);
-    }
-
-    .tier-hero-info {
-        flex: 1;
-    }
-
-    .tier-hero-label {
-        font-size: 0.9rem;
-        color: rgba(255,255,255,0.8);
-        margin: 0 0 0.5rem 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .tier-hero-title {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin: 0 0 0.5rem 0;
-    }
-
-    .tier-hero-points {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(255,255,255,0.15);
-        padding: 0.5rem 1.2rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 1rem;
-        margin: 0;
-    }
-
-    /* Progress Bar Mirip Desain Kiri Bawah */
-    .tier-hero-progress {
-        background: rgba(0,0,0,0.2);
-        padding: 1.5rem;
-        border-radius: var(--border-radius-lg);
-    }
-
-    .tier-progress-labels {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.8rem;
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
-
-    .tier-progress-labels span:last-child {
-        color: var(--ngolab-orange);
-    }
-
-    .tier-progress-track {
-        height: 12px;
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 50px;
-        overflow: hidden;
-        margin-bottom: 0.8rem;
-    }
-
-    .tier-progress-fill {
-        height: 100%;
-        background: var(--ngolab-orange); /* Oranye khas */
-        border-radius: 50px;
-        transition: width 1s ease-in-out;
-    }
-
-    .tier-progress-desc {
-        font-size: 0.9rem;
-        color: rgba(255,255,255,0.7);
-        margin: 0;
-    }
-
-    .tier-progress-desc a {
-        color: rgba(255,255,255,0.9);
-        text-decoration: underline;
-        margin-left: 5px;
-    }
-
-    /* Section & Cards */
-    .tier-section-title {
-        font-size: 1.5rem;
-        color: var(--ngolab-text);
-        margin: 3rem 0 1.5rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 700;
-    }
-    
-    .tier-section-title i {
-        color: var(--ngolab-orange);
-    }
-
-    .tier-cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .tier-card {
-        background: white;
-        border-radius: var(--border-radius-xl);
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        position: relative;
-        transition: transform 0.3s, box-shadow 0.3s;
-        border: 2px solid transparent;
-    }
-
-    .tier-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-    }
-
-    .tier-card-active {
-        border-color: var(--ngolab-orange);
-    }
-
-    .tier-card-ribbon {
-        position: absolute;
-        top: 1.2rem;
-        right: -2.2rem;
-        background: var(--ngolab-orange);
-        color: white;
-        font-size: 0.75rem;
-        font-weight: bold;
-        padding: 0.3rem 2.5rem;
-        transform: rotate(45deg);
-        z-index: 2;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .tier-card-header {
-        padding: 2rem 1.5rem;
-        color: white;
-        text-align: center;
-    }
-
-    .tier-card-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-    }
-
-    .tier-card-name {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-    }
-
-    .tier-card-range {
-        margin: 0.5rem 0 0 0;
-        font-size: 0.95rem;
-        background: rgba(0,0,0,0.15);
-        display: inline-block;
-        padding: 0.3rem 1rem;
-        border-radius: 50px;
-    }
-
-    .tier-card-body {
-        padding: 2rem 1.5rem;
-    }
-
-    .tier-card-benefit-title {
-        margin: 0 0 1.2rem 0;
-        color: var(--ngolab-text);
-        font-size: 1.1rem;
-        font-weight: 700;
-    }
-
-    .tier-benefit-list {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 2rem 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .tier-benefit-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.8rem;
-        font-size: 0.95rem;
-        color: var(--ngolab-text-light);
-        line-height: 1.5;
-    }
-
-    .tier-benefit-list i {
-        color: var(--ngolab-orange);
-        font-size: 1.2rem;
-        margin-top: 0.1rem;
-    }
-
-    .tier-card-status {
-        padding: 1rem;
-        border-radius: var(--border-radius-lg);
-        text-align: center;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-
-    .tier-card-status.active {
-        background: #FFF1E8;
-        color: var(--ngolab-orange);
-    }
-
-    .tier-card-status.passed {
-        background: #E6F4EA;
-        color: #1E8E3E;
-    }
-
-    .tier-card-status.locked {
-        background: #F1F3F4;
-        color: #5F6368;
-    }
-
-    /* Tips Section */
-    .tier-tips-card {
-        background: white;
-        border-radius: var(--border-radius-xl);
-        padding: 2.5rem;
-        margin-top: 3rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    }
-
-    .tier-tips-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-    }
-
-    .tier-tip-item {
-        text-align: center;
-    }
-
-    .tier-tip-icon {
-        width: 70px;
-        height: 70px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        margin: 0 auto 1.2rem auto;
-    }
-
-    .tier-tip-item h4 {
-        margin: 0 0 0.8rem 0;
-        color: var(--ngolab-text);
-        font-size: 1.1rem;
-        font-weight: 700;
-    }
-
-    .tier-tip-item p {
-        margin: 0;
-        color: var(--ngolab-text-light);
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-
-    @media (max-width: 768px) {
-        .tier-hero {
-            padding: 1.5rem;
-        }
-        .tier-hero-content {
-            flex-direction: column;
-            text-align: center;
-        }
-    }
-</style>
-
-<div class="tier-container">
+<div class="container">
     <!-- Back Navigation -->
     <a href="../dashboard/index.php" class="tier-back-link">
         <i class="ph ph-arrow-left"></i> Kembali ke Dashboard
     </a>
 
-    <!-- Hero Progress Section (Mengadaptasi desain card progress di gambar) -->
+    <!-- Hero Progress Section -->
     <div class="tier-hero">
         <div class="tier-hero-content">
             <div class="tier-hero-badge" style="background: <?= $tiers[$current_tier_idx]['gradient'] ?>;">
                 <i class="ph-fill <?= $tiers[$current_tier_idx]['icon'] ?>"></i>
             </div>
-            <div class="tier-hero-info">
+            <div>
                 <p class="tier-hero-label">Tier Anda Saat Ini</p>
                 <h1 class="tier-hero-title"><?= $user_tier ?> Member</h1>
-                <p class="tier-hero-points"><i class="ph-fill ph-star" style="color: #FBBF24;"></i> <?= number_format($user_points) ?> Poin Terkumpul</p>
+                <p class="tier-hero-points"><i class="ph-fill ph-star"></i> <?= number_format($user_points) ?> Poin Terkumpul</p>
             </div>
         </div>
         
         <?php if ($next_tier): ?>
-        <div class="tier-hero-progress">
+        <div>
             <div class="tier-progress-labels">
                 <span><?= $user_tier ?></span>
-                <span><?= $next_tier ?></span>
+                <span style="color: var(--primary);"><?= $next_tier ?></span>
             </div>
             <div class="tier-progress-track">
-                <!-- Fill warna oranye sesuai gambar -->
-                <div class="tier-progress-fill" style="width: <?= $progress_percent ?>%;"></div>
+                <div class="tier-progress-fill" style="width: <?= $progress_percent ?>%; background: <?= $tiers[$current_tier_idx]['gradient'] ?>;"></div>
             </div>
-            <p class="tier-progress-desc">
-                Kumpulkan <?= number_format($points_to_next) ?> poin lagi untuk naik ke <?= $next_tier ?> Tier. 
-                <a href="#perbandingan">Lihat Detail &rarr;</a>
+            <p class="tier-progress-need">
+                <i class="ph-fill ph-info"></i> Kumpulkan <?= number_format($points_to_next) ?> poin lagi untuk naik ke <?= $next_tier ?> Tier.
             </p>
         </div>
         <?php else: ?>
-        <div class="tier-hero-progress" style="text-align: center;">
-            <div class="tier-hero-points" style="background: rgba(255,255,255,0.2); padding: 1rem 2rem;">
-                <i class="ph-fill ph-crown" style="color: #FBBF24;"></i> Selamat! Anda berada di tier tertinggi.
+        <div style="text-align: center;">
+            <div class="tier-max-badge">
+                <i class="ph-fill ph-crown"></i> Selamat! Anda berada di tier tertinggi.
             </div>
         </div>
         <?php endif; ?>
@@ -479,7 +146,7 @@ if ($user_tier == 'Silver') {
             $is_locked = ($idx > $current_tier_idx);
             $is_passed = ($idx < $current_tier_idx);
         ?>
-        <div class="tier-card <?= $is_current ? 'tier-card-active' : '' ?>">
+        <div class="tier-card <?= $is_current ? 'tier-card-active' : '' ?> <?= $is_locked ? 'tier-card-locked' : '' ?>">
             <?php if ($is_current): ?>
                 <div class="tier-card-ribbon">TIER ANDA</div>
             <?php endif; ?>
@@ -494,7 +161,7 @@ if ($user_tier == 'Silver') {
             
             <div class="tier-card-body">
                 <h4 class="tier-card-benefit-title">
-                    Benefit Tier
+                    <i class="ph-fill ph-star"></i> Benefit Tier
                 </h4>
                 <ul class="tier-benefit-list">
                     <?php foreach ($tier['benefits'] as $benefit): ?>
@@ -525,7 +192,7 @@ if ($user_tier == 'Silver') {
 
     <!-- How to earn points -->
     <div class="tier-tips-card">
-        <h2 class="tier-section-title" style="margin-top: 0;"><i class="ph-fill ph-lightbulb"></i> Cara Mendapatkan Poin</h2>
+        <h2 class="tier-tips-title"><i class="ph-fill ph-lightbulb"></i> Cara Mendapatkan Poin</h2>
         <div class="tier-tips-grid">
             <div class="tier-tip-item">
                 <div class="tier-tip-icon" style="background: #fff7ed; color: #f97316;">
